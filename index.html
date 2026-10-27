@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StitchFlow - Custom Tailoring & Order Portal</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <header>
+        <h2>StitchFlow</h2>
+        <div class="nav-links" id="navLinks">
+            <button onclick="switchView('landing')" id="btn-landing">Home</button>
+            <button onclick="switchView('auth')" id="btn-auth">Sign In / Register</button>
+            <button onclick="switchView('dashboard')" id="btn-dashboard" class="active">Dashboard</button>
+            <button onclick="switchView('find-tailor')" id="btn-find-tailor">Find Tailor</button>
+            <button onclick="switchView('place-order')" id="btn-place-order" class="customer-only">Place New Order</button>
+            <button onclick="switchView('customers')" id="btn-customers" class="tailor-only">Customer Directory</button>
+            <button onclick="switchView('measurements')" id="btn-measurements">Measurements</button>
+            <button onclick="switchView('orders')" id="btn-orders">Orders Pipeline</button>
+        </div>
+    </header>
+
+    <div class="main-container">
+
+        <div id="userBanner" class="user-banner">
+            <div>Current Session Status: <span id="currentUserRole">Not Signed In (Guest)</span></div>
+            <div>
+                <button class="btn btn-danger tailor-only" style="padding: 0.3rem 0.8rem; font-size: 0.8rem; margin-right: 0.5rem;" onclick="resetStorage()">Reset Demo Data</button>
+                <button class="btn btn-secondary" style="padding: 0.3rem 0.8rem; font-size: 0.8rem;" onclick="logout()">Sign Out</button>
+            </div>
+        </div>
+
+        <!-- Landing View -->
+        <section id="landing" class="view">
+            <div class="card" style="text-align: center; padding: 3rem 2rem; background: #faf5ff;">
+                <h1 style="font-size: 2.5rem; margin-bottom: 1rem; color: var(--primary);">Custom Tailoring Portal</h1>
+                <p style="font-size: 1.1rem; color: #581c87; margin-bottom: 2rem;">Order custom suits, dresses, and traditional garments tailored directly to your body measurements.</p>
+                <button class="btn" style="font-size: 1.1rem; padding: 0.8rem 2rem;" onclick="switchView('auth')">Get Started</button>
+            </div>
+
+            <div class="hero-gallery">
+                <div class="hero-card">
+                    <img src="https://images.unsplash.com/photo-1434389677669-e08b4cac3105?auto=format&fit=crop&w=600&q=80" alt="Minimalist Linen Dress">
+                    <h4>Minimalist Custom Dresses</h4>
+                    <p>Simple, elegant silhouettes tailored with clean lines and soft natural fabrics.</p>
+                </div>
+                <div class="hero-card">
+                    <img src="https://images.unsplash.com/photo-1558769132-cb1aea458c5e?auto=format&fit=crop&w=600&q=80" alt="Subtle Evening Dress Form">
+                    <h4>Subtle Evening Wear</h4>
+                    <p>Understated custom gowns and dresses crafted for timeless grace.</p>
+                </div>
+                <div class="hero-card">
+                    <img src="https://images.unsplash.com/photo-1598033129183-c4f50c736f10?auto=format&fit=crop&w=600&q=80" alt="Tailored Blazer on Hanger">
+                    <h4>Classic Blazers & Jackets</h4>
+                    <p>Structured jackets and suits tailored with precision measurements.</p>
+                </div>
+                <div class="hero-card">
+                    <img src="https://images.unsplash.com/photo-1604719312566-8912e9227c6a?auto=format&fit=crop&w=600&q=80" alt="Natural Fabric Swatches">
+                    <h4>Subtle Organic Fabrics</h4>
+                    <p>High-quality linens, soft cottons, and muted silks selected for ultimate comfort.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Authentication View -->
+        <section id="auth" class="view">
+            <div style="max-width: 480px; margin: 0 auto;">
+                <div class="tab-switch">
+                    <button id="tabCustomer" class="active" onclick="switchAuthTab('customer')">Customer Portal</button>
+                    <button id="tabTailor" onclick="switchAuthTab('tailor')">Master Tailor Login</button>
+                </div>
+
+                <div id="formCustomer" class="card">
+                    <h3>Customer Access / Sign-Up</h3>
+                    <form onsubmit="handleCustomerAuth(event)">
+                        <div class="form-group">
+                            <label>Full Name</label>
+                            <input type="text" id="custAuthName" required placeholder="Jane Doe">
+                        </div>
+                        <div class="form-group">
+                            <label>Phone Number or Email</label>
+                            <input type="text" id="custAuthContact" required placeholder="+1 555-0142">
+                        </div>
+                        <button type="submit" class="btn" style="width: 100%;">Access My Orders</button>
+                    </form>
+                </div>
+
+                <div id="formTailor" class="card" style="display: none;">
+                    <h3>Master Tailor Login</h3>
+                    <div class="cred-box">
+                        <b>Tailor Credentials:</b><br>
+                        • Username: <code>admin</code><br>
+                        • Password: <code>mastertailor2026</code>
+                    </div>
+                    <form onsubmit="handleTailorAuth(event)">
+                        <div class="form-group">
+                            <label>Username</label>
+                            <input type="text" id="tailorUser" required placeholder="admin">
+                        </div>
+                        <div class="form-group">
+                            <label>Password</label>
+                            <input type="password" id="tailorPass" required placeholder="••••••••">
+                        </div>
+                        <button type="submit" class="btn btn-secondary" style="width: 100%;">Login as Tailor</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- Dashboard View -->
+        <section id="dashboard" class="view active">
+            <h2>Overview</h2>
+            <div class="grid-3">
+                <div class="card stat-card">
+                    <span>Total Customers</span>
+                    <h2 id="statCustomers">0</h2>
+                </div>
+                <div class="card stat-card">
+                    <span>Total Orders</span>
+                    <h2 id="statOrders">0</h2>
+                </div>
+                <div class="card stat-card">
+                    <span>Pending Orders</span>
+                    <h2 id="statPending">0</h2>
+                </div>
+            </div>
+        </section>
+
+        <!-- Find Tailor View -->
+        <section id="find-tailor" class="view">
+            <div class="card">
+                <h3>Find a Tailor Near You</h3>
+                <div class="search-row">
+                    <div class="form-group">
+                        <label>Your Location</label>
+                        <input type="text" id="tailorLocation" list="areaList" placeholder="e.g. Tambaram" onkeydown="if(event.key==='Enter'){findTailors();}">
+                        <datalist id="areaList"></datalist>
+                    </div>
+                    <div class="form-group">
+                        <label>Service</label>
+                        <select id="tailorService"></select>
+                    </div>
+                    <div class="form-group">
+                        <label>Sort By</label>
+                        <select id="tailorSort">
+                            <option value="distance">Nearest first</option>
+                            <option value="rating">Highest rated</option>
+                            <option value="price">Lowest price</option>
+                        </select>
+                    </div>
+                    <button class="btn" onclick="findTailors()">Search</button>
+                </div>
+            </div>
+
+            <div id="selectedTailorBox"></div>
+            <div id="tailorMessage"></div>
+
+            <div id="compareBar" class="user-banner" style="display: none;">
+                <div><span id="compareCount">0</span> tailor(s) chosen for comparison (max 3)</div>
+                <div>
+                    <button class="btn" style="padding: 0.3rem 0.8rem; font-size: 0.8rem; margin-right: 0.5rem;" onclick="showComparison()">Compare</button>
+                    <button class="btn btn-secondary" style="padding: 0.3rem 0.8rem; font-size: 0.8rem;" onclick="clearComparison()">Clear</button>
+                </div>
+            </div>
+
+            <div id="comparePanel"></div>
+            <div id="tailorResults" class="tailor-grid"></div>
+        </section>
+
+        <!-- Place Order View -->
+        <section id="place-order" class="view">
+            <div class="card" style="max-width: 700px; margin: 0 auto;">
+                <h3>Place a Custom Tailoring Order</h3>
+                <form onsubmit="placeCustomerOrder(event)">
+                    <div class="form-group">
+                        <label>Garment Type / Description</label>
+                        <input type="text" id="custOrderItem" placeholder="e.g. 2-Piece Wool Suit, Evening Dress, Linen Shirt" required>
+                    </div>
+
+                    <div class="meas-box">
+                        <h4 style="margin-top: 0; color: var(--primary);">Attach Body Measurements (Inches)</h4>
+                        <div class="form-grid-3">
+                            <div class="form-group">
+                                <label>Chest / Bust</label>
+                                <input type="number" step="0.1" id="custChest" required placeholder="38">
+                            </div>
+                            <div class="form-group">
+                                <label>Waist</label>
+                                <input type="number" step="0.1" id="custWaist" required placeholder="32">
+                            </div>
+                            <div class="form-group">
+                                <label>Length</label>
+                                <input type="number" step="0.1" id="custLength" required placeholder="30">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Special Instructions / Notes (Optional)</label>
+                        <textarea id="custNotes" rows="3" placeholder="e.g. Slim fit, double-breasted, extra sleeve length"></textarea>
+                    </div>
+
+                    <button type="submit" class="btn" style="width: 100%;">Submit Order & Measurements</button>
+                </form>
+            </div>
+        </section>
+
+        <!-- Customer Directory View -->
+        <section id="customers" class="view">
+            <div class="card tailor-only">
+                <h3>Add New Customer Profile</h3>
+                <form onsubmit="addCustomer(event)">
+                    <div class="form-grid">
+                        <div class="form-group"><label>Customer Name</label><input type="text" id="custName" required placeholder="e.g. Alex Morgan"></div>
+                        <div class="form-group"><label>Phone / Email</label><input type="text" id="custPhone" required placeholder="+1 555-0199"></div>
+                    </div>
+                    <button type="submit" class="btn">Register Customer</button>
+                </form>
+            </div>
+
+            <div class="card">
+                <h3>Customer Directory & Current Measurements</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Contact</th>
+                            <th>Chest</th>
+                            <th>Waist</th>
+                            <th>Length</th>
+                            <th class="tailor-only">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="customerTable"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Measurements View -->
+        <section id="measurements" class="view">
+            <div class="card customer-only">
+                <h3>My Measurements (Inches)</h3>
+                <form onsubmit="saveMyMeasurements(event)">
+                    <div class="form-grid-3">
+                        <div class="form-group"><label>Chest / Bust</label><input type="number" step="0.1" id="myChest" required placeholder="38"></div>
+                        <div class="form-group"><label>Waist</label><input type="number" step="0.1" id="myWaist" required placeholder="32"></div>
+                        <div class="form-group"><label>Length</label><input type="number" step="0.1" id="myLength" required placeholder="30"></div>
+                    </div>
+                    <button type="submit" class="btn">Add / Update My Measurements</button>
+                </form>
+            </div>
+
+            <div class="card guest-only">
+                <h3>Register as a Customer & Add Measurements</h3>
+                <form onsubmit="registerGuestWithMeasurements(event)">
+                    <div class="form-grid">
+                        <div class="form-group"><label>Full Name</label><input type="text" id="guestName" required placeholder="Jane Doe"></div>
+                        <div class="form-group"><label>Phone Number or Email</label><input type="text" id="guestContact" required placeholder="+91 98765 43210"></div>
+                    </div>
+                    <div class="form-grid-3">
+                        <div class="form-group"><label>Chest / Bust (inches)</label><input type="number" step="0.1" id="guestChest" required placeholder="38"></div>
+                        <div class="form-group"><label>Waist (inches)</label><input type="number" step="0.1" id="guestWaist" required placeholder="32"></div>
+                        <div class="form-group"><label>Length (inches)</label><input type="number" step="0.1" id="guestLength" required placeholder="30"></div>
+                    </div>
+                    <button type="submit" class="btn">Register & Save Measurements</button>
+                </form>
+            </div>
+
+            <div class="card tailor-only">
+                <h3>Add or Update Customer Measurements (Tailor Override)</h3>
+                <form onsubmit="addMeasurement(event)">
+                    <div class="form-group">
+                        <label>Select Customer</label>
+                        <select id="measCustSelect" required onchange="populateTailorMeasurementFields(this.value)"></select>
+                    </div>
+                    <div class="form-grid-3">
+                        <div class="form-group"><label>Chest (inches)</label><input type="number" step="0.1" id="measChest" required></div>
+                        <div class="form-group"><label>Waist (inches)</label><input type="number" step="0.1" id="measWaist" required></div>
+                        <div class="form-group"><label>Length (inches)</label><input type="number" step="0.1" id="measLength" required></div>
+                    </div>
+                    <button type="submit" class="btn">Save / Update Measurements</button>
+                </form>
+            </div>
+
+            <div class="card">
+                <h3>Customer Measurements Log</h3>
+                <table>
+                    <thead>
+                        <tr><th>Customer</th><th>Chest</th><th>Waist</th><th>Length</th><th>Last Updated</th></tr>
+                    </thead>
+                    <tbody id="measurementTable"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Orders View -->
+        <section id="orders" class="view">
+            <div class="card">
+                <h3>Order Pipeline</h3>
+                <table>
+                    <thead>
+                        <tr><th>Order ID</th><th>Customer</th><th>Garment Item</th><th>Attached Measurements</th><th>Status</th><th class="tailor-only">Actions</th></tr>
+                    </thead>
+                    <tbody id="orderTable"></tbody>
+                </table>
+            </div>
+        </section>
+
+    </div>
+
+    <script src="js/app.js"></script>
+</body>
+</html>
